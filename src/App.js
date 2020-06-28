@@ -19,18 +19,29 @@ class App extends Component {
   }
 
   findPalette(id) {
-    return this.state.palettes.find(function(palette) {
+    console.log(this.state.palettes)
+    const result = this.state.palettes.find(function(palette) {
       return palette.id === id;
     });
+    console.log(result)
+    return result
   }
 
   componentDidMount(){
-    console.log(`called`)
     try{
      const savedPalette = JSON.parse(window.localStorage.getItem("palettes"))
-      this.setState({
-        palettes:savedPalette || seedColors
+     if(savedPalette !== null){
+       console.log("herer")
+       this.setState({
+          palettes:savedPalette
+        })
+      }else{
+        console.log("here")
+       this.setState({
+          palettes:seedColors
       })
+     }
+     console.log(this.state.palettes)
     }catch(e){
       console.log(e)
     }
@@ -74,7 +85,7 @@ class App extends Component {
           classNames="page" timeout={300}
           key={location.key}
           >
-            <Switch location={location}>
+        <Switch location={location}>
    
         <Route
           exact
@@ -121,8 +132,9 @@ class App extends Component {
             <Page>
             <Palette
               palette={generatePalette(
-                this.findPalette(routeProps.match.params.id)
+                this.findPalette("material-ui-colors")
               )}
+              routeProps ={routeProps}
             />
             </Page>
           )}
