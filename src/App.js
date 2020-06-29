@@ -18,6 +18,11 @@ class App extends Component {
     this.findPalette = this.findPalette.bind(this);
   }
 
+  addToLocalStorage = (addItem) => {
+    window.localStorage.setItem("palettes",JSON.stringify(addItem))
+    const parse = window.localStorage.getItem("palettes")
+    console.log(JSON.parse(parse))
+  }
   findPalette(id) {
     console.log(this.state.palettes)
     const result = this.state.palettes.find(function(palette) {
@@ -30,28 +35,17 @@ class App extends Component {
   componentDidMount(){
     try{
      const savedPalette = JSON.parse(window.localStorage.getItem("palettes"))
-     if(savedPalette !== null){
-       console.log("herer")
-       this.setState({
-          palettes:savedPalette
-        })
-      }else{
-        console.log("here")
-       this.setState({
-          palettes:seedColors
-      })
-     }
-     console.log(this.state.palettes)
+     if(savedPalette === null){
+       this.addToLocalStorage(seedColors)
+      }
+       this.setState(curSt => ({
+         palettes:savedPalette
+       }))
     }catch(e){
       console.log(e)
     }
   }
 
-  addToLocalStorage = (addItem) => {
-    window.localStorage.setItem("palettes",JSON.stringify(addItem))
-    const parse = window.localStorage.getItem("palettes")
-    console.log(JSON.parse(parse))
-  }
 
   gatherPaletteName = () => {
     let arr = []
@@ -78,6 +72,9 @@ class App extends Component {
   }
 
   render() {
+    const isReady = this.state.palettes.length < 1
+    console.log(this.state.palettes)
+    if(!isReady){
     return (
       <Route render={({location}) => (
         <TransitionGroup>
@@ -132,7 +129,7 @@ class App extends Component {
             <Page>
             <Palette
               palette={generatePalette(
-                this.findPalette("material-ui-colors")
+                this.findPalette(routeProps.match.params.id)
               )}
               routeProps ={routeProps}
             />
@@ -144,7 +141,11 @@ class App extends Component {
           </CSSTransition>
         </TransitionGroup>
       )} />
-    );
+    )}else{
+      return(
+        <h1>Loading</h1>
+      )
+    }
   }
 }
 
